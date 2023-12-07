@@ -1,3 +1,10 @@
+// Nome: Lucas Schmitz e Bernardo do Santos
+// Objetivo: CRUD de estoque de Produto
+// Analista Funcional: Gildomiro Bairros
+// Data de Desenvolvimento: 06//12/2023
+// Observação: O arquivo ".csv" está no output e está denominado como "produtos.csv"
+//             Qualquer dúvida, entrar em contato.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,14 +24,20 @@ void limparEstrutura(struct Produto *produto)
     memset(produto, 0, sizeof(struct Produto));
 }
 
+void clearScreen()
+{
+    system("printf \"\\033c\"");
+}
+
 void criarProduto()
 {
+    clearScreen();
     system("clear");
 
     // Declarando variaveis locais
     char retorno;
-
     char separador = ';';
+    char term;
 
     // Declarando novo produto
     struct Produto produto;
@@ -38,25 +51,110 @@ void criarProduto()
     printf("|---------------------------------|\n\n");
 
     // Codigo do produto
-    printf("Insira o Código do produto: ");
-    scanf("%d", &produto.codigo);
+    do
+    {
+
+        printf("Insira o Código do produto: ");
+
+        if (scanf("%d%c", &produto.codigo, &term) != 2 || term != '\n')
+        { // 1 = entrada bem sucedida
+            printf("Erro: Código deve ser um número inteiro.\n");
+            while (getchar() != '\n')
+                ; // Limpar o buffer de entrada
+        }
+        else
+        {
+            break; // Sai do loop se a entrada for válida
+        }
+
+    } while (2);
 
     // Nome do Produto
-    printf("Insira o Nome do Produto: ");
-    while (getchar() != '\n')
-        ;
-    fgets(produto.nome, sizeof(produto.nome), stdin);
-    produto.nome[strlen(produto.nome) - 1] = 0;
+    // printf("Insira o Nome do Produto: ");
+    // fgets(produto.nome, sizeof(produto.nome), stdin);
+    // produto.nome[strlen(produto.nome) - 1] = 0;
+
+    do
+    {
+        printf("Insira o Nome do Produto: ");
+
+        fgets(produto.nome, sizeof(produto.nome), stdin);
+
+        // Remover de nova linha
+        // size_t --> armazena os tamanhos de objetos no C. É o tipo retornado das funções (size_of e strlen)
+        size_t len = strlen(produto.nome);
+        if (len > 0 && produto.nome[len - 1] == '\n')
+        {
+            produto.nome[len - 1] = '\0';
+        }
+
+        if (isspace(produto.nome[0]))
+        {
+            printf("Erro: Nome do Produto não deve ter espaços em branco.\n");
+        }
+        else if (produto.nome[0] == '\0')
+        {
+            printf("Erro: Nome do Produto não deve ser nulo.\n");
+        }
+        else
+        {
+            break;
+        }
+
+        // fgets(produto.nome, sizeof(produto.nome), stdin);
+
+    } while (1);
 
     // Quantidade do produto
-    printf("Insira a Quantidade do Produto: ");
-    scanf("%d", &produto.quantidade);
+    do
+    {
+
+        printf("Insira a Quantidade do Produto: ");
+
+        // if (scanf("%d", &produto.quantidade) != 1)
+        if (scanf("%d%c", &produto.quantidade, &term) != 2 || term != '\n')
+        { // 1 = entrada bem sucedida
+            printf("Erro: Quantidade deve ser um número inteiro.\n");
+            while (getchar() != '\n')
+                ; // Limpar o buffer de entrada
+        }
+        else
+        {
+            break; // Sai do loop se a entrada for válida
+        }
+
+    } while (2);
 
     // Valor unitário
-    printf("Insira um Valor unitário: ");
-    scanf("%f", &produto.valorUnitario);
+    do
+    {
 
-    FILE *arquivoProdutos = fopen("produtos.csv", "a+");
+        printf("Insira um Valor unitário: ");
+
+        if (scanf("%f", &produto.valorUnitario) != 1)
+        { // 1 = entrada bem sucedida
+            printf("Erro: Valor Unitário deve ser um valor.\n");
+            while (getchar() != '\n')
+                ; // Limpar o buffer de entrada
+            printf("\n");
+        }
+        else
+        {
+            break; // Sai do loop se a entrada for válida
+        }
+
+    } while (1);
+
+    // printf("Insira um Valor unitário: ");
+    // scanf("%f", &produto.valorUnitario);
+    FILE *arquivoValidacao = fopen("produtos.csv", "r");
+    if (arquivoValidacao == NULL)
+    {
+        printf("Erro ao abrir os arquivos.\n");
+        return;
+    }
+
+    FILE *arquivoProdutos = fopen("produtos.csv", "a");
     if (arquivoProdutos == NULL)
     {
         printf("Erro ao abrir os arquivos.\n");
@@ -78,7 +176,7 @@ void criarProduto()
         {
         case 's':
 
-            fprintf(arquivoProdutos, "%d%c%s%c%d%c%f\n", produto.codigo, separador, produto.nome, separador, produto.quantidade, separador, produto.valorUnitario);
+            fprintf(arquivoProdutos, "%d%c%s%c%d%c%.2f\n", produto.codigo, separador, produto.nome, separador, produto.quantidade, separador, produto.valorUnitario);
 
             fclose(arquivoProdutos);
 
@@ -89,13 +187,14 @@ void criarProduto()
             printf("|---------------------------------|\n\n");
             break;
         case 'n':
+            system("clear");
             printf("|---------------------------------|\n");
             printf("|     PRODUTO NÃO CADASTRADO!     |\n");
             printf("|---------------------------------|\n\n");
             limparEstrutura(&produto);
             break;
         default:
-
+            system("clear");
             printf("|---------------------------------|\n");
             printf("|          OPÇÃO INVÁLIDA.        |\n");
             printf("|   TENTE NOVAMENTE, POR FAVOR!   |\n");
@@ -108,6 +207,7 @@ void criarProduto()
 void editarProduto()
 {
     system("clear");
+    clearScreen();
 
     printf("|---------------------------------|\n");
     printf("|---------------------------------|\n");
@@ -118,6 +218,8 @@ void editarProduto()
     printf("|---------------------------------|\n\n");
 
     int codigo;
+    char term;
+
     printf("Qual o código do produto que você deseja atualizar?\n");
     printf("Código: ");
     scanf("%d", &codigo);
@@ -183,23 +285,88 @@ void editarProduto()
             printf("Quantidade: %d\n", produto.quantidade);
             printf("Valor Unitário: %.2f\n\n", produto.valorUnitario);
 
+            while (getchar() != '\n')
+                ; // Limpar o buffer de entrada
+
             // Nome
-            printf("Insira um Novo Nome: ");
+            do
+            {
+
+                printf("Insira um Novo Nome: ");
+
+                fgets(produto.nome, sizeof(produto.nome), stdin);
+
+                // Remover de nova linha
+                size_t len = strlen(produto.nome);
+                if (len > 0 && produto.nome[len - 1] == '\n')
+                {
+                    produto.nome[len - 1] = '\0';
+                }
+
+                if (isspace(produto.nome[0]))
+                {
+                    printf("Erro: Nome do Produto não deve ter espaços em branco.\n");
+                }
+                else if (produto.nome[0] == '\0')
+                {
+                    printf("Erro: Nome do Produto não deve ser nulo.\n");
+                }
+                else
+                {
+                    break;
+                }
+
+                // fgets(produto.nome, sizeof(produto.nome), stdin);
+
+            } while (1);
+
+            /*printf("Insira um Novo Nome: ");
             while (getchar() != '\n')
                 ;
             fgets(produto.nome, sizeof(produto.nome), stdin);
-            produto.nome[strlen(produto.nome) - 1] = '\0';
+            produto.nome[strlen(produto.nome) - 1] = '\0';*/
 
-            // Quantidade
-            printf("Insira uma Nova Quantidade: ");
-            scanf("%d", &produto.quantidade);
+            do
+            {
 
-            // Valor Unitário
-            printf("Insira um novo Novo Valor Unitário: ");
-            scanf("%f", &produto.valorUnitario);
+                printf("Insira uma Nova Quantidade: ");
+
+                // if (scanf("%d", &produto.quantidade) != 1)
+                if (scanf("%d%c", &produto.quantidade, &term) != 2 || term != '\n')
+                { // 1 = entrada bem sucedida
+                    printf("Erro: Quantidade deve ser um número inteiro.\n");
+                    while (getchar() != '\n')
+                        ; // Limpar o buffer de entrada
+                }
+                else
+                {
+                    break; // Sai do loop se a entrada for válida
+                }
+
+            } while (2);
+
+            // Valor unitário
+            do
+            {
+
+                printf("Insira um Novo Valor unitário: ");
+
+                if (scanf("%f", &produto.valorUnitario) != 1)
+                { // 1 = entrada bem sucedida
+                    printf("Erro: Valor Unitário deve ser um valor.");
+                    while (getchar() != '\n')
+                        ; // Limpar o buffer de entrada
+                    printf("\n");
+                }
+                else
+                {
+                    break; // Sai do loop se a entrada for válida
+                }
+
+            } while (1);
 
             // Inserindo dados no arquivo temporario
-            fprintf(arquivoTemporario, "%d%c%s%c%d%c%f\n", produto.codigo, separador, produto.nome, separador, produto.quantidade, separador, produto.valorUnitario);
+            fprintf(arquivoTemporario, "%d%c%s%c%d%c%.2f\n", produto.codigo, separador, produto.nome, separador, produto.quantidade, separador, produto.valorUnitario);
         }
     }
 
@@ -208,7 +375,7 @@ void editarProduto()
 
     if (codigoEncontrado == 0)
     {
-
+        system("clear");
         printf("|---------------------------------|\n");
         printf("|       CÓDIGO NÃO ENCONTRADO     |\n");
         printf("|    FAVOR REINICIAR O PROCESSO!  |\n");
@@ -251,7 +418,11 @@ void editarProduto()
                 printf("|---------------------------------|\n\n");
                 break;
             default:
-                printf("Opção inválida. Tente novamente.\n");
+                system("clear");
+                printf("|---------------------------------|\n");
+                printf("|          OPÇÃO INVÁLIDA.        |\n");
+                printf("|   TENTE NOVAMENTE, POR FAVOR!   |\n");
+                printf("|---------------------------------|\n\n");
             }
 
         } while (retorno != 's' && retorno != 'n');
@@ -261,6 +432,7 @@ void editarProduto()
 void excluirProduto()
 {
     system("clear");
+    clearScreen();
 
     printf("|---------------------------------|\n");
     printf("|---------------------------------|\n");
@@ -329,6 +501,7 @@ void excluirProduto()
 
     if (codigoEncontrado == 0)
     {
+        system("clear");
         printf("|---------------------------------|\n");
         printf("|       CÓDIGO NÃO ENCONTRADO     |\n");
         printf("|    FAVOR REINICIAR O PROCESSO!  |\n");
@@ -371,7 +544,11 @@ void excluirProduto()
                 printf("|---------------------------------|\n\n");
                 break;
             default:
-                printf("Opção inválida. Tente novamente.\n");
+                system("clear");
+                printf("|---------------------------------|\n");
+                printf("|          OPÇÃO INVÁLIDA.        |\n");
+                printf("|   TENTE NOVAMENTE, POR FAVOR!   |\n");
+                printf("|---------------------------------|\n\n");
             }
 
         } while (retorno != 's' && retorno != 'n');
@@ -381,6 +558,7 @@ void excluirProduto()
 void listarProduto()
 {
     system("clear");
+    clearScreen();
 
     printf("|---------------------------------|\n");
     printf("|---------------------------------|\n");
@@ -482,7 +660,7 @@ int main()
 {
 
     int tela;
-    FILE *arquivoProdutos = fopen("produtos.csv", "a+");
+    FILE *arquivoProdutos = fopen("produtos.csv", "r");
 
     if (arquivoProdutos == NULL)
     {
@@ -514,7 +692,7 @@ int main()
         case 1:
             if (arquivoProdutos != NULL)
             {
-                printf("Arquivo aberto com sucesso!\n\n");
+                printf("\nArquivo aberto com sucesso!\n\n");
             }
             break;
         case 2: // Cadastro do produto
