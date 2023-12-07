@@ -1,4 +1,4 @@
-// Nome: Lucas Schmitz e Bernardo do Santos
+// Nome: Lucas Schmitz e Bernardo dos Santos
 // Objetivo: CRUD de estoque de Produto
 // Analista Funcional: Gildomiro Bairros
 // Data de Desenvolvimento: 06//12/2023
