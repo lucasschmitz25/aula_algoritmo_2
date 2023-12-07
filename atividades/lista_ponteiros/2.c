@@ -19,11 +19,11 @@ int main() {
 	printf("O segundo valor é %d\n", (*ponteiro) * 2);
 	ponteiro++;
 	printf("O terceiro valor é %d\n", (*ponteiro) * 2);
-  ponteiro++;
-  printf("O quarto valor é %d\n", (*ponteiro) * 2);
-  ponteiro++;
-  printf("O quinto valor é %d\n", (*ponteiro) * 2);
-  ponteiro++;
+    	ponteiro++;
+    	printf("O quarto valor é %d\n", (*ponteiro) * 2);
+    	ponteiro++;
+    	printf("O quinto valor é %d\n", (*ponteiro) * 2);
+    	ponteiro++;
 	return 0;
 
 }
